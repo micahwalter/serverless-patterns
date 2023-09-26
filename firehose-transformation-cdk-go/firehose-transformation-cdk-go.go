@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
-	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awss3"
+
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -18,11 +20,23 @@ func NewFirehoseTransformationCdkGoStack(scope constructs.Construct, id string, 
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	// The code that defines your stack goes here
+	// lambda function for data transforation processing
+	// lambda function needs to be compiled to the bin/data-transformation/bootsrtap before deploying with the CDK
+	awslambda.NewFunction(stack, jsii.String("DataTransformationFunction"), &awslambda.FunctionProps{
+		Code:         awslambda.Code_FromAsset(jsii.String("bin/data-transformation"), nil), //folder where bootstrap executable is located
+		Runtime:      awslambda.Runtime_PROVIDED_AL2(),
+		Handler:      jsii.String("bootstrap"), // Handler named bootstrap
+		Architecture: awslambda.Architecture_ARM_64(),
+	})
 
-	// example resource
-	// queue := awssqs.NewQueue(stack, jsii.String("FirehoseTransformationCdkGoQueue"), &awssqs.QueueProps{
-	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
+	// s3 bucket for data destination from firehose
+	awss3.NewBucket(stack, jsii.String("DataDestinationBucket"), &awss3.BucketProps{
+		Encryption: awss3.BucketEncryption_S3_MANAGED,
+	})
+
+	// kinesis firehose delivery stream
+	// awskinesisfirehose.CfnDeliveryStream(stack, jsii.String("KinesisFirehoseDataStream"), &awskinesisfirehose.CfnDeliveryStreamProps{
+	// 	ExtendedS3DestinationConfiguration: awskinesisfirehose.CfnDeliveryStream.,
 	// })
 
 	return stack

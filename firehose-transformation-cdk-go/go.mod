@@ -3,9 +3,10 @@ module firehose-transformation-cdk-go
 go 1.18
 
 require (
-	github.com/aws/aws-cdk-go/awscdk/v2 v2.92.0
-	github.com/aws/constructs-go/constructs/v10 v10.2.69
-	github.com/aws/jsii-runtime-go v1.87.0
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.97.1
+	github.com/aws/aws-lambda-go v1.41.0
+	github.com/aws/constructs-go/constructs/v10 v10.2.70
+	github.com/aws/jsii-runtime-go v1.88.0
 )
 
 require (
